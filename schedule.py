@@ -90,6 +90,7 @@ def get_class_status(course):
     
     if not isinstance(msg[0], int):
         return 'Changes to server. Check site.'
+    return msg
     br.close()
 
 
@@ -106,6 +107,7 @@ def check_schedules():
             elif status == schedules[person][course]:
                 critical = False
             elif status != schedules[person][course]:
+                schedules[person][course] = status
                 client.sms.messages.create(to=person, from_=FROM_NUMBER, body=course[1]+' '+course[2]+' '+course[3]+': '+status)
 
 
@@ -121,8 +123,8 @@ def analyze_msg(msg):
             return 'Successfully stopped all courses.'
         elif len(text_lines) < 5:
             return 'Not enough arguments.'
-        elif text_lines[1:5] in schedules[msg.from_]:
-            del schedules[msg.from_][text_lines[1:5]]
+        elif tuple(text_lines[1:5]) in schedules[msg.from_]:
+            del schedules[msg.from_][tuple(text_lines[1:5])]
             return 'Successfully stopped: '+text_lines[1]+' '+text_lines[2]+' '+text_lines[3]+' '+text_lines[4]
         else:
             return 'Course not found: '+text_lines[1]+' '+text_lines[2]+' '+text_lines[3]+' '+text_lines[4]
@@ -153,21 +155,23 @@ def admin(msg):
             schedules = {'+15622918691': {}}
     elif text_lines[0].upper() == 'AUTHORIZE':
         schedules[text_lines[1]] == {}
+        AUTHORIZED.append(text_lines[1])
         client.sms.messages.create(to=msg.from_, from_=FROM_NUMBER, body='You are now authorized!')
-        client.sms.messages.create(to=admin, from_=FROM_NUMBER, body=msg.from_ + ' is now authorized.')
+        client.sms.messages.create(to=ADMIN, from_=FROM_NUMBER, body=msg.from_ + ' is now authorized.')
     elif text_lines[0].upper() == 'DEAUTHORIZE':
-        if text_lines[1] in authorized:
+        if text_lines[1] in AUTHORIZED:
+            AUTHORIZED.remove(text_lines[1])
             del schedules[text_lines[1]]
-            client.sms.messages.create(to=admin, from_=FROM_NUMBER, body=text_lines[1]+' is now deauthorized.')
+            client.sms.messages.create(to=ADMIN, from_=FROM_NUMBER, body=text_lines[1]+' is now deauthorized.')
         else:
-            client.sms.messages.create(to=admin, from_=FROM_NUMBER, body=text_lines[1]+' was not found.')
+            client.sms.messages.create(to=ADMIN, from_=FROM_NUMBER, body=text_lines[1]+' was not found.')
     authorized(msg)
 
 
 def main(right_now):
     for msg in client.sms.messages.iter(to=TWILIO_PHONE_NUMBER):
         global previously_checked
-        if msg.date_sent <= unicode(previously_checked):
+        if msg.date_sent >= unicode(previously_checked):
             if msg.from_ == ADMIN:
                 admin(msg)
             elif msg.from_ in AUTHORIZED:
@@ -175,7 +179,7 @@ def main(right_now):
             else:
                 client.sms.messages.create(to=msg.from_, from_=FROM_NUMBER, body=errors[3])
                 b = msg.from_ + ' tried to use this service.'
-                client.sms.messages.create(to=admin, from_=FROM_NUMBER, body=b)
+                client.sms.messages.create(to=ADMIN, from_=FROM_NUMBER, body=b)
     check_schedules()
     previously_checked = right_now
 
