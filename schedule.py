@@ -171,15 +171,15 @@ def admin(msg):
 def main(right_now):
     for msg in client.sms.messages.iter(to=TWILIO_PHONE_NUMBER):
         global previously_checked
-        if msg.date_sent >= unicode(previously_checked):
-            if msg.from_ == ADMIN:
-                admin(msg)
-            elif msg.from_ in AUTHORIZED:
-                authorized(msg)
-            else:
-                client.sms.messages.create(to=msg.from_, from_=FROM_NUMBER, body=errors[3])
-                b = msg.from_ + ' tried to use this service.'
-                client.sms.messages.create(to=ADMIN, from_=FROM_NUMBER, body=b)
+        if change_unicode(msg.date_sent) >= change_datetime(previously_checked):
+#            if msg.from_ == ADMIN:
+#                admin(msg)
+#            elif msg.from_ in AUTHORIZED:
+#                authorized(msg)
+#            else:
+#                client.sms.messages.create(to=msg.from_, from_=FROM_NUMBER, body=errors[3])
+#                b = msg.from_ + ' tried to use this service.'
+#                client.sms.messages.create(to=ADMIN, from_=FROM_NUMBER, body=b)
     check_schedules()
     previously_checked = right_now
 
@@ -189,8 +189,33 @@ while True:
         right_now = datetime.now()
         if critical and (right_now.second % 60 == 0):
             main(right_now)
-        elif right_now.minute % 10 == 0:
+            time.sleep(1)
+        elif right_now.minute % 3 == 0:
             main(right_now)
+            time.sleep(60)
     except Exception as e:
         client.sms.messages.create(to=TO_NUMBER, from_=FROM_NUMBER, body=e[:160])
         continue
+
+
+
+def change_datetime(datetime):
+    return a.strftime('%Y %m %d %H:%M:%S')
+
+
+def change_unicode(date_sent):
+    
+
+
+for msg in client.sms.messages.iter(to=TWILIO_PHONE_NUMBER):
+    global previously_checked
+    print previously_checked
+    print msg.date_sent
+    if str(msg.date_sent) >= change_datetime(previously_checked):
+        print msg.body
+    print ' '
+
+
+2012-11-10 11:06:19.087913
+Fri, 12 Oct 2012 02:20:13 +0000
+1
