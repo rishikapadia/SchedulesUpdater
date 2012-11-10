@@ -88,10 +88,8 @@ def get_class_status(course):
         msg = msg.replace('  ', ' ')
     msg = msg.strip() + '.'
     
-    if not isinstance(msg[0], int):
-        return 'Changes to server. Check site.'
-    return msg
     br.close()
+    return msg
 
 
 def check_schedules():
