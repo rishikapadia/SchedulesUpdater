@@ -9,7 +9,8 @@ Note: Run in Python version 2.7, NOT 3
 import mechanize, urllib, urllib2, cookielib, time
 from _beautifulsoup import BeautifulSoup
 from twilio.rest import TwilioRestClient
-from datetime import datetime
+from datetime import datetime, timedelta
+from email.utils import parsedate
 
 
 TWILIO_PHONE_NUMBER = "(562) 352 - 0309"
@@ -101,6 +102,7 @@ def check_schedules():
                 critical = True
                 client.sms.messages.create(to=person, from_=FROM_NUMBER, body=status)
             elif status == errors[4]:
+                critical = True
                 return
             elif status == schedules[person][course]:
                 critical = False
@@ -110,7 +112,7 @@ def check_schedules():
 
 
 def analyze_msg(msg):
-    text_lines = msg.body.split()
+    text_lines = tuple(msg.body.split())
     if len(text_lines) < 1:
         return
     elif len(text_lines) == 1:
@@ -133,8 +135,8 @@ def analyze_msg(msg):
         return 'Changes to server. Unable to add course at this moment.'
     elif status in errors:
         return status
-    schedules[msg.from_][text_lines[0:4]] = tuple(status)
-    return status
+    schedules[msg.from_][tuple(text_lines[0:4])] = str(status)
+    return course[1]+' '+course[2]+' '+course[3]+': '+status
 
 
 def authorized(msg):
@@ -163,21 +165,22 @@ def admin(msg):
             client.sms.messages.create(to=ADMIN, from_=FROM_NUMBER, body=text_lines[1]+' is now deauthorized.')
         else:
             client.sms.messages.create(to=ADMIN, from_=FROM_NUMBER, body=text_lines[1]+' was not found.')
-    authorized(msg)
+    else:
+        authorized(msg)
 
 
-def change_datetime(datetime):
-    return datetime.strftime('%Y %m %d %H:%M:%S')
+def change_datetime(dt):
+    return dt + timedelta(hours=8)  # GMT-8 to UTC
 
 
-def change_unicode(date_sent):
-    t = str(date_sent)[5:25]
-    return t[-13:-9]+' '+str(time.strptime(t[3:6], '%b').tm_mon)+' '+t[:2]+' '+t[-8:]
+def change_unicode(date_sent):   # UTC
+    t = parsedate(date_sent)
+    return datetime(t[0], t[1], t[2], t[3], t[4], t[5], 999999)
 
 
 def main(right_now):
+    global previously_checked
     for msg in client.sms.messages.iter(to=TWILIO_PHONE_NUMBER):
-        global previously_checked
         if change_unicode(msg.date_sent) >= change_datetime(previously_checked):
             if msg.from_ == ADMIN:
                 admin(msg)
@@ -196,10 +199,32 @@ while True:
         right_now = datetime.now()
         if critical and (right_now.second % 60 == 0):
             main(right_now)
-            time.sleep(1)
+            time.sleep(2)
         elif right_now.minute % 10 == 0:
             main(right_now)
-            time.sleep(60)
+            time.sleep(61)
     except Exception as e:
         client.sms.messages.create(to=TO_NUMBER, from_=FROM_NUMBER, body=e[:160])
         continue
+
+
+
+
+
+###############
+"""
+Errors:
+Time conversion is wrong for unicode time msg.date_sent
+
+
+>>> b = [f.date_sent for f in client.sms.messages.iter(to=TWILIO_PHONE_NUMBER)]
+>>> b
+[u'Sun, 11 Nov 2012 01:46:06 +0000', u'Sat, 10 Nov 2012 20:29:36 +0000', u'Sat, 10 Nov 2012 18:49:51 +0000', u'Sat, 10 Nov 2012 07:27:12 +0000', u'Sat, 10 Nov 2012 07:13:16 +0000', u'Sat, 10 Nov 2012 07:10:05 +0000', u'Sat, 10 Nov 2012 05:32:19 +0000', u'Sat, 10 Nov 2012 05:09:48 +0000', u'Mon, 05 Nov 2012 06:55:04 +0000', u'Fri, 12 Oct 2012 02:30:58 +0000', u'Fri, 12 Oct 2012 02:20:22 +0000', u'Fri, 12 Oct 2012 02:20:13 +0000']
+
+>>> main(datetime.now())
+Spring math 1b 203
+Spring math 1b 203
+Spring math 1b 203
+
+RFC 2822
+"""
