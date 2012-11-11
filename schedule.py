@@ -112,7 +112,7 @@ def check_schedules():
 
 
 def analyze_msg(msg):
-    text_lines = tuple(msg.body.split())
+    text_lines = tuple(str(msg.body).split())
     if len(text_lines) < 1:
         return
     elif len(text_lines) == 1:
@@ -136,7 +136,7 @@ def analyze_msg(msg):
     elif status in errors:
         return status
     schedules[msg.from_][tuple(text_lines[0:4])] = str(status)
-    return course[1]+' '+course[2]+' '+course[3]+': '+status
+    return text_lines[1]+' '+text_lines[2]+' '+text_lines[3]+': '+status
 
 
 def authorized(msg):
@@ -227,4 +227,12 @@ Spring math 1b 203
 Spring math 1b 203
 
 RFC 2822
+
+
+u'Sun, 11 Nov 2012 03:24:15 +0000'  --> 7:24 PM, Nov 10, 2012
+3:24 AM, Nov 11, 2012
+
+u'Sun, 11 Nov 2012 03:23:46 +0000'  --> 7:23 PM, Nov 10, 2012
 """
+#################
+# Use heroku.com as a python server
