@@ -182,3 +182,32 @@ def find_nr(br, sec_number):
                 return -1
     return num_forms - form_to_submit + 1    
 """
+
+
+
+
+###############
+"""
+Errors:
+Time conversion is wrong for unicode time msg.date_sent
+
+
+>>> b = [f.date_sent for f in client.sms.messages.iter(to=TWILIO_PHONE_NUMBER)]
+>>> b
+[u'Sun, 11 Nov 2012 01:46:06 +0000', u'Sat, 10 Nov 2012 20:29:36 +0000', u'Sat, 10 Nov 2012 18:49:51 +0000', u'Sat, 10 Nov 2012 07:27:12 +0000', u'Sat, 10 Nov 2012 07:13:16 +0000', u'Sat, 10 Nov 2012 07:10:05 +0000', u'Sat, 10 Nov 2012 05:32:19 +0000', u'Sat, 10 Nov 2012 05:09:48 +0000', u'Mon, 05 Nov 2012 06:55:04 +0000', u'Fri, 12 Oct 2012 02:30:58 +0000', u'Fri, 12 Oct 2012 02:20:22 +0000', u'Fri, 12 Oct 2012 02:20:13 +0000']
+
+>>> main(datetime.now())
+Spring math 1b 203
+Spring math 1b 203
+Spring math 1b 203
+
+RFC 2822
+
+
+u'Sun, 11 Nov 2012 03:24:15 +0000'  --> 7:24 PM, Nov 10, 2012
+3:24 AM, Nov 11, 2012
+
+u'Sun, 11 Nov 2012 03:23:46 +0000'  --> 7:23 PM, Nov 10, 2012
+"""
+#################
+# Use heroku.com as a python server
