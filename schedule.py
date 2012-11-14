@@ -193,22 +193,17 @@ def main(right_now):
     check_schedules()
     previously_checked = right_now
 
-
-while True:
-    try:
-        right_now = datetime.now()
-        if critical and (right_now.second % 60 == 0):
-            main(right_now)
-            time.sleep(2)
-        elif right_now.minute % 10 == 0:
-            main(right_now)
-            time.sleep(61)
-    except Exception as e:
-        client.sms.messages.create(to=TO_NUMBER, from_=FROM_NUMBER, body=e[:160])
-        continue
-
-
-
-
-#################
-# Use heroku.com as a python server
+@main
+def run():
+    while True:
+        try:
+            right_now = datetime.now()
+            if critical and (right_now.second % 60 == 0):
+                main(right_now)
+                time.sleep(2)
+            elif right_now.minute % 10 == 0:
+                main(right_now)
+                time.sleep(61)
+        except Exception as e:
+            client.sms.messages.create(to=TO_NUMBER, from_=FROM_NUMBER, body=e[:160])
+            continue
