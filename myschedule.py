@@ -111,4 +111,4 @@ while True:
             previously_checked = right_now
             time.sleep(1)
     except Exception as e:
-        client.sms.messages.create(to='+15622918691', from_=FROM_NUMBER, body='ERROR: '+str(e[:160]))
+        client.sms.messages.create(to='+15622918691', from_=FROM_NUMBER, body='ERROR: '+str(e))
