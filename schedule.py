@@ -135,7 +135,7 @@ def analyze_msg(msg):
         return 'Changes to server. Unable to add course at this moment.'
     elif status in errors:
         return status
-    schedules[msg.from_][tuple(text_lines[0:4])] = str(status)
+    schedules[msg.from_][tuple(text_lines[:4])] = str(status)
     return text_lines[1]+' '+text_lines[2]+' '+text_lines[3]+': '+status
 
 
@@ -170,7 +170,7 @@ def admin(msg):
 
 
 def change_datetime(dt):
-    return dt #+ timedelta(hours=8)  # GMT-8 to UTC
+    return dt #+ timedelta(hours=8)  # GMT-8 to UTC #
 
 
 def change_unicode(date_sent):   # UTC
@@ -193,17 +193,16 @@ def main(right_now):
     check_schedules()
     previously_checked = right_now
 
-@main
-def run():
-    while True:
-        try:
-            right_now = datetime.now()
-            if critical and (right_now.second % 60 == 0):
-                main(right_now)
-                time.sleep(2)
-            elif right_now.minute % 10 == 0:
-                main(right_now)
-                time.sleep(61)
-        except Exception as e:
-            client.sms.messages.create(to=TO_NUMBER, from_=FROM_NUMBER, body=e[:160])
-            continue
+
+while True:
+    try:
+        right_now = datetime.now()
+        if critical and (right_now.second % 60 == 0):
+            main(right_now)
+            time.sleep(1)
+        elif right_now.minute % 10 == 0:
+            main(right_now)
+            time.sleep(60)
+    except Exception as e:
+        client.sms.messages.create(to=TO_NUMBER, from_=FROM_NUMBER, body='ERROR: '+e[:160])
+        continue
