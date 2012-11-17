@@ -105,7 +105,7 @@ def check_schedules():
 while True:
     try:
         right_now = datetime.now()
-        if right_now.second % 60 == 0):
+        if (right_now.second % 60 == 0):
             check_schedules()
             global previously_checked
             previously_checked = right_now
