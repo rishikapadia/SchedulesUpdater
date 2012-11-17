@@ -40,7 +40,7 @@ def find_nr(br, sec_number):
     elif text.count(sec_number) > 1:
         for _ in range(text.count(sec_number)):
             i = text.index(sec_number)
-            if text[i-1] != ':' or text[i-2] != ':':
+            if text[i-1] != ':' and text[i-2] != ':':
                 form_to_submit = text.count('submit', i)
         if form_to_submit == -1:
                 return -1
@@ -93,9 +93,12 @@ def check_schedules():
         if status == schedules[course]:
             pass
         elif status != schedules[course]:
-            schedules[course] = status
-            b = course[1]+' '+course[2]+' '+course[3]+': '+status
-            client.sms.messages.create(to='+15622918691', from_=FROM_NUMBER, body=b[:160])
+            if status in errors:
+                pass
+            else:
+                schedules[course] = status
+                b = course[1]+' '+course[2]+' '+course[3]+': '+status
+                client.sms.messages.create(to='+15622918691', from_=FROM_NUMBER, body=b[:160])
 
 
 while True:
@@ -104,6 +107,8 @@ while True:
         if (right_now.second % 60 == 0):
             check_schedules()
             time.sleep(1)
+    except URLError as e:
+        pass
     except Exception as e:
         b = 'ERROR: '+str(e)
         client.sms.messages.create(to='+15622918691', from_=FROM_NUMBER, body=b[:160])

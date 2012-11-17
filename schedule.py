@@ -22,7 +22,7 @@ FROM_NUMBER = '+15623520309'     # Twilio phone number
 TO_NUMBER = '+15622918691'     # Default TO_NUMBER
 
 urls = {'FALL': 'http://schedule.berkeley.edu/srchfall.html', 'SPRING': 'http://schedule.berkeley.edu/srchsprg.html', 'SUMMER': 'http://schedule.berkeley.edu/srchsmr.html'}
-errors = ["Sorry, that is not a valid semester entry.", "Sorry, that is not a valid course entry.", "Sorry, that is not a valid section number.", "I'm sorry, you are not authorized to use this service.", "Telebears is down for an unscheduled maintenance."]
+errors = ["Sorry, that is not a valid semester entry.", "Sorry, that is not a valid course entry.", "Sorry, that is not a valid section number.", "I'm sorry, you are not authorized to use this service.", "Telebears is down for an unscheduled maintenance.", "Section number returns too many results."]
 
 ADMIN = '+15622918691'
 AUTHORIZED = ['+15622918691']
@@ -46,7 +46,7 @@ def find_nr(br, sec_number):
     elif text.count(sec_number) > 1:
         for _ in range(text.count(sec_number)):
             i = text.index(sec_number)
-            if text[i-1] != ':' or text[i-2] != ':':
+            if text[i-1] != ':' and text[i-2] != ':':
                 form_to_submit = text.count('submit', i)
         if form_to_submit == -1:
                 return -1
@@ -67,7 +67,10 @@ def get_class_status(course):
     if br.response().read()[2411:2413] == 'No':
         return errors[1]
     
-    form_number = find_nr(br, course[3])
+    section = ' '+course[3]+' '
+    if br.response().read().count(section) > 1:
+        return errors[5]
+    form_number = find_nr(br, section)
     if form_number == -1:
         return errors[2]
     br.select_form(nr=form_number)
@@ -93,23 +96,27 @@ def get_class_status(course):
     return str(msg)
 
 
-def check_schedules():
+def check_schedule(course):
+    global critical
+    status = get_class_status(course)
+    if status in errors:
+        critical = True
+        return
+    elif status == schedules[person][course]:
+        critical = False
+    elif status != schedules[person][course]:
+        schedules[person][course] = status
+        b = course[1]+' '+course[2]+' '+course[3]+': '+status
+        client.sms.messages.create(to=person, from_=FROM_NUMBER, body=b[:160])
+
+def check_all():
     for person in schedules:
         for course in schedules[person]:
-            global critical
-            status = get_class_status(course)
-            if status == 'Changes to server. Check site.':
-                critical = True
-                client.sms.messages.create(to=person, from_=FROM_NUMBER, body=status)
-            elif status == errors[4]:
-                critical = True
-                return
-            elif status == schedules[person][course]:
-                critical = False
-            elif status != schedules[person][course]:
-                schedules[person][course] = status
-                client.sms.messages.create(to=person, from_=FROM_NUMBER, body=course[1]+' '+course[2]+' '+course[3]+': '+status)
+            check_schedule(course)
 
+def check_admin():
+    for course in schedules[admin]:
+        check_schedule(course)
 
 def analyze_msg(msg):
     text_lines = tuple(str(msg.body).split())
@@ -140,9 +147,9 @@ def analyze_msg(msg):
 
 
 def authorized(msg):
-    status_text = analyze_msg(msg)
+    status_text = str(analyze_msg(msg))
     if status_text:
-        client.sms.messages.create(to=msg.from_, from_=FROM_NUMBER, body=str(status_text))
+        client.sms.messages.create(to=msg.from_, from_=FROM_NUMBER, body=status_text[:160])
 
 
 def admin(msg):
@@ -157,14 +164,17 @@ def admin(msg):
         schedules[text_lines[1]] == {}
         AUTHORIZED.append(text_lines[1])
         client.sms.messages.create(to=msg.from_, from_=FROM_NUMBER, body='You are now authorized!')
-        client.sms.messages.create(to=ADMIN, from_=FROM_NUMBER, body=msg.from_ + ' is now authorized.')
+        b = str(msg.from_) + ' is now authorized.'
+        client.sms.messages.create(to=ADMIN, from_=FROM_NUMBER, body=b[:160])
     elif text_lines[0].upper() == 'DEAUTHORIZE':
         if text_lines[1] in AUTHORIZED:
             AUTHORIZED.remove(text_lines[1])
             del schedules[text_lines[1]]
-            client.sms.messages.create(to=ADMIN, from_=FROM_NUMBER, body=str(text_lines[1])+' is now deauthorized.')
+            b = str(text_lines[1])+' is now deauthorized.'
+            client.sms.messages.create(to=ADMIN, from_=FROM_NUMBER, body=b[:160])
         else:
-            client.sms.messages.create(to=ADMIN, from_=FROM_NUMBER, body=str(text_lines[1])+' was not found.')
+            b = str(text_lines[1])+' was not found.'
+            client.sms.messages.create(to=ADMIN, from_=FROM_NUMBER, body=b[:160])
     else:
         authorized(msg)
 
@@ -197,12 +207,13 @@ def main(right_now):
 while True:
     try:
         right_now = datetime.now()
-        if critical and (right_now.second % 60 == 0):
+        if right_now.second % 60 == 0:
+            check_admin()
             main(right_now)
             time.sleep(1)
-        elif right_now.minute % 10 == 0:
-            main(right_now)
-            print right_now
-            time.sleep(60)
+            if right_now.minute % 10 == 0:
+                main(right_now)
+    except urllib2.URLError as e:
+        pass
     except Exception as e:
         client.sms.messages.create(to=TO_NUMBER, from_=FROM_NUMBER, body='ERROR: '+str(e[:160]))
