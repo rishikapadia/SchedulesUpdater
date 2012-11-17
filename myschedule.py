@@ -24,9 +24,7 @@ TO_NUMBER = '+15622918691'     # Default TO_NUMBER
 urls = {'FALL': 'http://schedule.berkeley.edu/srchfall.html', 'SPRING': 'http://schedule.berkeley.edu/srchsprg.html', 'SUMMER': 'http://schedule.berkeley.edu/srchsmr.html'}
 errors = ["Sorry, that is not a valid semester entry.", "Sorry, that is not a valid course entry.", "Sorry, that is not a valid section number.", "I'm sorry, you are not authorized to use this service.", "Telebears is down for an unscheduled maintenance."]
 
-schedules = {('spring', 'math', '1b', '203'): '', ('spring', 'math', '1b', '201'): '', ('spring', 'math', '1b', '202'): '', ('spring', 'physics', '7a', '107'): '', ('spring', 'physics', '7a', '108'): ''}
-
-previously_checked = datetime.now()
+schedules = {('spring', 'physics', '7a', '107'): '', ('spring', 'physics', '7a', '108'): '', ('spring', 'math', '1b', '203'): '', ('spring', 'math', '1b', '201'): '', ('spring', 'math', '1b', '202'): ''}
 
 
 
@@ -104,8 +102,7 @@ while True:
         right_now = datetime.now()
         if (right_now.second % 60 == 0):
             check_schedules()
-            global previously_checked
-            previously_checked = right_now
             time.sleep(1)
     except Exception as e:
-        client.sms.messages.create(to='+15622918691', from_=FROM_NUMBER, body='ERROR: '+str(e))
+        b = 'ERROR: '+str(e)
+        client.sms.messages.create(to='+15622918691', from_=FROM_NUMBER, body=b[:160])
