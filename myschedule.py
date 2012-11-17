@@ -92,11 +92,8 @@ def get_class_status(course):
 def check_schedules():
     for course in schedules:
         status = get_class_status(course)
-        if status == errors[4]:
-            critical = True
-            return
-        elif status == schedules[course]:
-            critical = False
+        if status == schedules[course]:
+            pass
         elif status != schedules[course]:
             schedules[course] = status
             client.sms.messages.create(to='+15622918691', from_=FROM_NUMBER, body=course[1]+' '+course[2]+' '+course[3]+': '+status)
