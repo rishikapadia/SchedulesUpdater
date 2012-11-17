@@ -202,6 +202,7 @@ while True:
             time.sleep(1)
         elif right_now.minute % 10 == 0:
             main(right_now)
+            print right_now
             time.sleep(60)
     except Exception as e:
         client.sms.messages.create(to=TO_NUMBER, from_=FROM_NUMBER, body='ERROR: '+e[:160])
