@@ -90,7 +90,7 @@ def get_class_status(course):
     msg = msg.strip() + '.'
     
     br.close()
-    return msg
+    return str(msg)
 
 
 def check_schedules():
@@ -142,7 +142,7 @@ def analyze_msg(msg):
 def authorized(msg):
     status_text = analyze_msg(msg)
     if status_text:
-        client.sms.messages.create(to=msg.from_, from_=FROM_NUMBER, body=status_text)
+        client.sms.messages.create(to=msg.from_, from_=FROM_NUMBER, body=str(status_text))
 
 
 def admin(msg):
@@ -162,9 +162,9 @@ def admin(msg):
         if text_lines[1] in AUTHORIZED:
             AUTHORIZED.remove(text_lines[1])
             del schedules[text_lines[1]]
-            client.sms.messages.create(to=ADMIN, from_=FROM_NUMBER, body=text_lines[1]+' is now deauthorized.')
+            client.sms.messages.create(to=ADMIN, from_=FROM_NUMBER, body=str(text_lines[1])+' is now deauthorized.')
         else:
-            client.sms.messages.create(to=ADMIN, from_=FROM_NUMBER, body=text_lines[1]+' was not found.')
+            client.sms.messages.create(to=ADMIN, from_=FROM_NUMBER, body=str(text_lines[1])+' was not found.')
     else:
         authorized(msg)
 
@@ -188,7 +188,7 @@ def main(right_now):
                 authorized(msg)
             else:
                 client.sms.messages.create(to=msg.from_, from_=FROM_NUMBER, body=errors[3])
-                b = msg.from_ + ' tried to use this service.'
+                b = str(msg.from_) + ' tried to use this service.'
                 client.sms.messages.create(to=ADMIN, from_=FROM_NUMBER, body=b)
     check_schedules()
     previously_checked = right_now
@@ -205,5 +205,4 @@ while True:
             print right_now
             time.sleep(60)
     except Exception as e:
-        client.sms.messages.create(to=TO_NUMBER, from_=FROM_NUMBER, body='ERROR: '+e[:160])
-        continue
+        client.sms.messages.create(to=TO_NUMBER, from_=FROM_NUMBER, body='ERROR: '+str(e[:160]))
