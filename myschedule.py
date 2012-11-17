@@ -94,7 +94,8 @@ def check_schedules():
             pass
         elif status != schedules[course]:
             schedules[course] = status
-            client.sms.messages.create(to='+15622918691', from_=FROM_NUMBER, body=course[1]+' '+course[2]+' '+course[3]+': '+status)
+            b = course[1]+' '+course[2]+' '+course[3]+': '+status
+            client.sms.messages.create(to='+15622918691', from_=FROM_NUMBER, body=b[:160])
 
 
 while True:
