@@ -24,7 +24,7 @@ TO_NUMBER = '+15622918691'     # Default TO_NUMBER
 urls = {'FALL': 'http://schedule.berkeley.edu/srchfall.html', 'SPRING': 'http://schedule.berkeley.edu/srchsprg.html', 'SUMMER': 'http://schedule.berkeley.edu/srchsmr.html'}
 errors = ["Sorry, that is not a valid semester entry.", "Sorry, that is not a valid course entry.", "Sorry, that is not a valid section number.", "I'm sorry, you are not authorized to use this service.", "Telebears is down for an unscheduled maintenance."]
 
-schedules = {('spring', 'physics', '7a', '107'): '', ('spring', 'physics', '7a', '108'): '', ('spring', 'math', '1b', '203'): '', ('spring', 'math', '1b', '201'): '', ('spring', 'math', '1b', '202'): ''}
+schedules = {('spring', 'physics', '7a', '107'): '', ('spring', 'physics', '7a', '108'): '', ('spring', 'math', '1b', '203'): '', ('spring', 'math', '1b', '201 '): '', ('spring', 'math', '1b', '202'): ''}
 
 
 
