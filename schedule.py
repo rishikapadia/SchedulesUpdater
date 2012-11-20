@@ -96,7 +96,7 @@ def get_class_status(course):
     return str(msg)
 
 
-def check_schedule(course):
+def check_schedule(course, person):
     global critical
     status = get_class_status(course)
     if status in errors:
@@ -112,11 +112,11 @@ def check_schedule(course):
 def check_all():
     for person in schedules:
         for course in schedules[person]:
-            check_schedule(course)
+            check_schedule(course, person)
 
 def check_admin():
     for course in schedules[ADMIN]:
-        check_schedule(course)
+        check_schedule(course, ADMIN)
 
 def analyze_msg(msg):
     text_lines = tuple(str(msg.body).split())
