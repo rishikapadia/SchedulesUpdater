@@ -209,7 +209,6 @@ def run():
             right_now = datetime.now()
             if right_now.second % 60 == 0:
                 check_admin()
-                main(right_now)
                 time.sleep(1)
                 if right_now.minute % 10 == 0:
                     main(right_now)
