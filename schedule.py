@@ -226,12 +226,9 @@ def run2():
         from datetime import datetime, timedelta
         from email.utils import parsedate
 
-
-        TWILIO_PHONE_NUMBER = "(562) 352 - 0309"
-        TWILIO_ACCOUNT_SID = 'ACdd9b3407c0ff20c450ebe385bc09c71a'
-        TWILIO_AUTH_TOKEN = '0a1ffeb8651886b31fe61bcd1ee3d47f'
         client = TwilioRestClient(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 
         run()
+        client.sms.messages.create(to=TO_NUMBER, from_=FROM_NUMBER, body="Run Restarted: "+ str(datetime.now()))
 
 run2()
