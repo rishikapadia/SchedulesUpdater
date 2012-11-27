@@ -203,6 +203,31 @@ def main(right_now):
     check_all()
     previously_checked = right_now
 
+
+
+
+
+try:
+    right_now = datetime.now()
+    if right_now.second % 60 == 0:
+        check_admin()
+        time.sleep(1)
+        if right_now.minute % 10 == 0:
+            main(right_now)
+except urllib2.URLError as e:
+    pass
+except Exception as e:
+    client.sms.messages.create(to=TO_NUMBER, from_=FROM_NUMBER, body='ERROR: '+str(e[:160]))
+    break
+
+
+
+
+
+
+
+
+"""
 def run():
     while True:
         try:
@@ -214,8 +239,9 @@ def run():
                     main(right_now)
         except urllib2.URLError as e:
             pass
-        #except Exception as e:
-        #    client.sms.messages.create(to=TO_NUMBER, from_=FROM_NUMBER, body='ERROR: '+str(e[:160]))
+        except Exception as e:
+            client.sms.messages.create(to=TO_NUMBER, from_=FROM_NUMBER, body='ERROR: '+str(e[:160]))
+            break
 
 
 def run2():
@@ -232,3 +258,4 @@ def run2():
         client.sms.messages.create(to=TO_NUMBER, from_=FROM_NUMBER, body="Run Restarted: "+ str(datetime.now()))
 
 run2()
+"""
