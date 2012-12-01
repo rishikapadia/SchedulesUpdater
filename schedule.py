@@ -1,7 +1,7 @@
 """
 Rishi Kapadia
 Schedule Update Notifier
-Hackathon 11-9-12 to 11-10-12
+CSUA Hackathon 11-9-12 to 11-10-12
 
 Note: Run in Python version 2.7, NOT 3
 """
@@ -33,6 +33,30 @@ critical = False
 previously_checked = datetime.now()
 
 
+def read_from_file():
+    try:
+        try:
+            f = open("data.py", "r")
+            string = f.read()
+            global schedules
+            schedules = eval(string)
+        finally:
+            f.close()
+    except IOError:
+        pass
+
+def write_to_file():
+    # Write mode creates a new file or overwrites the existing content of the file. 
+    # Write mode will _always_ destroy the existing contents of a file.
+    try:
+        # This will create a new file or **overwrite an existing file**.
+        f = open("data.py", "w")
+        try:
+            f.write(str(schedules)) # Write a string to a file
+        finally:
+            f.close()
+    except IOError:
+        pass
 
 
 def find_nr(br, sec_number):
@@ -180,7 +204,7 @@ def admin(msg):
 
 
 def change_datetime(dt):
-    return dt #+ timedelta(hours=8)  # GMT-8 to UTC #
+    return dt + timedelta(hours=8)  # GMT-8 to UTC #
 
 
 def change_unicode(date_sent):   # UTC
@@ -206,37 +230,32 @@ def main(right_now):
 
 
 
-
+"""
 try:
     right_now = datetime.now()
-    if right_now.second % 60 == 0:
-        check_admin()
-        time.sleep(1)
-        if right_now.minute % 10 == 0:
-            main(right_now)
+    check_admin()
+    if right_now.minute % 10 == 0:
+        main(right_now)
 except urllib2.URLError as e:
     pass
 except Exception as e:
     client.sms.messages.create(to=TO_NUMBER, from_=FROM_NUMBER, body='ERROR: '+str(e[:160]))
     break
-
-
-
-
-
-
-
-
 """
+
+
+
 def run():
     while True:
         try:
+            read_from_file()
             right_now = datetime.now()
             if right_now.second % 60 == 0:
                 check_admin()
                 time.sleep(1)
                 if right_now.minute % 10 == 0:
                     main(right_now)
+            write_to_file()
         except urllib2.URLError as e:
             pass
         except Exception as e:
@@ -258,4 +277,3 @@ def run2():
         client.sms.messages.create(to=TO_NUMBER, from_=FROM_NUMBER, body="Run Restarted: "+ str(datetime.now()))
 
 run2()
-"""
