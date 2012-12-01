@@ -204,7 +204,7 @@ def admin(msg):
 
 
 def change_datetime(dt):
-    return dt #+ timedelta(hours=8)  # GMT-8 to UTC #
+    return dt + timedelta(hours=8)  # GMT-8 to UTC #
 
 
 def change_unicode(date_sent):   # UTC
