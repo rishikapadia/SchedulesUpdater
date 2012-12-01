@@ -204,7 +204,7 @@ def admin(msg):
 
 
 def change_datetime(dt):
-    return dt + timedelta(hours=8)  # GMT-8 to UTC #
+    return dt #+ timedelta(hours=8)  # GMT-8 to UTC #
 
 
 def change_unicode(date_sent):   # UTC
@@ -271,6 +271,7 @@ def run2():
         from datetime import datetime, timedelta
         from email.utils import parsedate
 
+        global client
         client = TwilioRestClient(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 
         run()
