@@ -34,16 +34,12 @@ previously_checked = datetime.now()
 
 
 def read_from_file():
-    try:
-        try:
-            f = open("data.py", "r")
-            string = f.read()
-            global schedules
-            schedules = eval(string)
-        finally:
-            f.close()
-    except IOError:
-        pass
+    f = open("data.py", "r")
+    string = f.read()
+    global schedules
+    schedules = eval(string)
+    f.close()
+
 
 def write_to_file():
     # Write mode creates a new file or overwrites the existing content of the file. 
@@ -51,10 +47,9 @@ def write_to_file():
     try:
         # This will create a new file or **overwrite an existing file**.
         f = open("data.py", "w")
-        try:
+        if schedules != {'+15622918691': {}}:
             f.write(str(schedules)) # Write a string to a file
-        finally:
-            f.close()
+        f.close()
     except IOError:
         pass
 
