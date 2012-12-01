@@ -143,7 +143,7 @@ def check_admin():
         check_schedule(course, ADMIN)
 
 def analyze_msg(msg):
-    text_lines = tuple(str(msg.body).split())
+    text_lines = tuple(str(msg.body).upper().split())
     if len(text_lines) < 1:
         return
     elif len(text_lines) == 1:
@@ -175,6 +175,12 @@ def authorized(msg):
     if status_text:
         client.sms.messages.create(to=msg.from_, from_=FROM_NUMBER, body=status_text[:160])
 
+class UserError(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
+
 
 def admin(msg):
     text_lines = msg.body.split()
@@ -184,6 +190,8 @@ def admin(msg):
         if text_lines[0].lower() == 'clear' or text_lines[0].lower() == 'reset':
             global schedules
             schedules = {'+15622918691': {}}
+    elif text_lines[0].upper() == 'EXIT':
+        raise UserError("User-prompted exception successful.")
     elif text_lines[0].upper() == 'AUTHORIZE':
         schedules[text_lines[1]] == {}
         AUTHORIZED.append(text_lines[1])
@@ -204,7 +212,7 @@ def admin(msg):
 
 
 def change_datetime(dt):
-    return dt #+ timedelta(hours=8)  # GMT-8 to UTC #
+    return dt + timedelta(hours=8)  # GMT-8 to UTC #
 
 
 def change_unicode(date_sent):   # UTC
@@ -226,8 +234,6 @@ def main(right_now):
                 client.sms.messages.create(to=ADMIN, from_=FROM_NUMBER, body=b)
     check_all()
     previously_checked = right_now
-
-
 
 
 """
@@ -258,9 +264,9 @@ def run():
             write_to_file()
         except urllib2.URLError as e:
             pass
-        except Exception as e:
-            client.sms.messages.create(to=TO_NUMBER, from_=FROM_NUMBER, body='ERROR: '+str(e[:160]))
-            break
+        #except Exception as e:
+        #    client.sms.messages.create(to=TO_NUMBER, from_=FROM_NUMBER, body='ERROR: '+str(e[:160]))
+        #    break
 
 
 def run2():
@@ -274,7 +280,10 @@ def run2():
         global client
         client = TwilioRestClient(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 
-        run()
+        try:
+            run()
+        except UserError as e:
+            break
         client.sms.messages.create(to=TO_NUMBER, from_=FROM_NUMBER, body="Run Restarted: "+ str(datetime.now()))
 
 run2()
