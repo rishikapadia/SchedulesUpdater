@@ -252,14 +252,14 @@ except Exception as e:
 def run():
     while True:
         try:
-            read_from_file()
             right_now = datetime.now()
             if right_now.second % 60 == 0:
+                read_from_file()
                 check_admin()
                 time.sleep(1)
                 if right_now.minute % 10 == 0:
                     main(right_now)
-            write_to_file()
+                write_to_file()
         except urllib2.URLError as e:
             pass
         #except Exception as e:
