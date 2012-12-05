@@ -6,8 +6,11 @@ CSUA Hackathon 11-9-12 to 11-10-12
 Note: Run in Python version 2.7, NOT 3
 """
 
-import mechanize, urllib, urllib2, cookielib, time
-from _beautifulsoup import BeautifulSoup
+from mechanize import _mechanize
+from mechanize import *
+import urllib, urllib2, cookielib, time
+from bs4 import BeautifulSoup
+from mechanize._beautifulsoup import BeautifulSoup
 from twilio.rest import TwilioRestClient
 from datetime import datetime, timedelta
 from email.utils import parsedate
@@ -73,7 +76,7 @@ def find_nr(br, sec_number):
 
 
 def get_class_status(course):
-    br = mechanize.Browser()
+    br = _mechanize.Browser()
     br.set_cookiejar(cookielib.LWPCookieJar())
     if course[0].upper() not in urls:
         return errors[0]
@@ -266,8 +269,8 @@ def run():
 
 def run2():
     while True:
-        import mechanize, urllib, urllib2, cookielib, time
-        from _beautifulsoup import BeautifulSoup
+        #import mechanize, urllib, urllib2, cookielib, time
+        #from _beautifulsoup import BeautifulSoup
         from twilio.rest import TwilioRestClient
         from datetime import datetime, timedelta
         from email.utils import parsedate
