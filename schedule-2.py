@@ -87,17 +87,16 @@ def return_live_course_size(ccn):
 def scrape_course_info(url):
     html = urllib2.urlopen(url).read() 
     soup = BeautifulSoup(html) 
-    output_dict = {}
-    a = []
+    output_dict = {} 
     search_results = soup.find_all('table')[1:-1] 
     for each in search_results:
-        a.append(each.text.encode('utf-8').strip().replace("\xc2\xa0","").split("\n"))
+        class_details = each.text.encode('utf-8').strip().replace("\xc2\xa0","").split("\n")
         result_dict = {}
         for field in class_details:
             if field.split(":")[1]:
                 result_dict[field.split(":")[0].lower()] = field.split(":")[1].lower().strip()
         result_dict['enrollment info'] = return_live_course_size(int(result_dict['course control number']))
-        output_dict[result_dict["course"]] = result_dict
+        output_dict[result_dict["course"]] = result_dict 
     return output_dict
 
 
