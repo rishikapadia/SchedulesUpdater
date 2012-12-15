@@ -6,9 +6,10 @@ CSUA Hackathon 11-9-12 to 11-10-12
 Note: Run in Python version 2.7, NOT 3
 """
 
+from mechanize import _mechanize
 from mechanize import *
-import urllib, urllib2, cookielib, time
-from mechanize._beautifulsoup import BeautifulSoup
+import urllib, urllib2, os, cookielib, time
+from bs4 import BeautifulSoup
 from twilio.rest import TwilioRestClient
 from datetime import datetime, timedelta
 from email.utils import parsedate
@@ -23,6 +24,7 @@ FROM_NUMBER = '+15623520309'     # Twilio phone number
 TO_NUMBER = '+15622918691'     # Default TO_NUMBER
 
 urls = {'FALL': 'http://schedule.berkeley.edu/srchfall.html', 'SPRING': 'http://schedule.berkeley.edu/srchsprg.html', 'SUMMER': 'http://schedule.berkeley.edu/srchsmr.html'}
+abbrev = {"FALL":"FA", "SPRING":"SP", "SUMMER":"SU"}
 errors = ["Sorry, that is not a valid semester entry.", "Sorry, that is not a valid course entry.", "Sorry, that is not a valid section number.", "I'm sorry, you are not authorized to use this service.", "Telebears is down for an unscheduled maintenance.", "Section number returns too many results."]
 
 ADMIN = '+15622918691'
@@ -33,9 +35,10 @@ global critical
 critical = False
 previously_checked = datetime.now()
 
+saved_so_far = {}
 
 def read_from_file():
-    f = open("data.py", "r")
+    f = open("data-2.py", "r")
     string = f.read()
     global schedules
     schedules = eval(string)
@@ -47,7 +50,7 @@ def write_to_file():
     # Write mode will _always_ destroy the existing contents of a file.
     try:
         # This will create a new file or **overwrite an existing file**.
-        f = open("data.py", "w")
+        f = open("data-2.py", "w")
         if schedules != {'+15622918691': {}}:
             f.write(str(schedules)) # Write a string to a file
         f.close()
@@ -55,15 +58,9 @@ def write_to_file():
         pass
 
 
+#####
 
 
-
-
-
-
-''' Sample query url for cs70 spring 2013
-http://osoc.berkeley.edu/OSOC/osoc?y=0&p_term=SP&p_deptname=Computer+Science&p_course=70 
-'''
 TEMPLATE_URL = "http://osoc.berkeley.edu/OSOC/osoc?y=0&p_term={0}&p_deptname={1}&p_course={2}"
 MAPPINGS = {"DIS":"Discussion Section","LAB":"Lab"} 
 
@@ -104,16 +101,7 @@ def scrape_course_info(url):
     return output_dict
 
 
-
-
-
-
-
-
-
-
-
-
+#######
 
 
 def find_nr(br, sec_number):
@@ -135,7 +123,7 @@ def find_nr(br, sec_number):
 
 
 def get_class_status(course):
-    br = mechanize.Browser()
+    br = _mechanize.Browser()
     br.set_cookiejar(cookielib.LWPCookieJar())
     if course[0].upper() not in urls:
         return errors[0]
@@ -147,12 +135,24 @@ def get_class_status(course):
     r = br.submit()
     if br.response().read()[2411:2413] == 'No':
         return errors[1]
-    
-    """
-    return scrape_course_info(
-    
-    """
 
+    msg = "Course not found."
+    class_name = course[0] + " " + course[1] + " " +course[2]
+    if class_name in saved_so_far:
+		section = saved_so_far[class_name]
+    else:
+        section = scrape_course_info(gen_url(course[1], course[2], abbrev[course[0].upper()]))
+        saved_so_far[class_name] = section
+    
+    for class_name in section:
+		if course[3] in class_name:
+			s = section[class_name]['enrollment info']
+			msg = "enrolled: {0}/{1}, waitlisted: {2}/{3}".format(s['current size'], s['class size'], s['waitlist size'], s['waitlist limit'])
+			return msg
+    return msg
+    
+
+    """
     section = ' '+course[3]+' '
     if br.response().read().count(section) > 1:
         return errors[5]
@@ -180,6 +180,7 @@ def get_class_status(course):
     
     br.close()
     return str(msg)
+    """
 
 
 def check_schedule(course, person):
@@ -323,6 +324,8 @@ def run():
                 time.sleep(1)
                 if right_now.minute % 10 == 0:
                     main(right_now)
+                global saved_so_far
+                saved_so_far = {}
             write_to_file()
         except urllib2.URLError as e:
             pass
@@ -333,8 +336,8 @@ def run():
 
 def run2():
     while True:
-        import mechanize, urllib, urllib2, cookielib, time
-        from _beautifulsoup import BeautifulSoup
+        import urllib, urllib2, os, cookielib, time
+        from bs4 import BeautifulSoup
         from twilio.rest import TwilioRestClient
         from datetime import datetime, timedelta
         from email.utils import parsedate
