@@ -146,8 +146,9 @@ def get_class_status(course):
     for class_name in section:
 		if course[3] in class_name:
 			s = section[class_name]['enrollment info']
-			msg = "enrolled: {0}/{1}, waitlisted: {2}/{3}".format(s['current size'], s['class size'], s['waitlist size'], s['waitlist limit'])
-			return msg
+			if s['waitlist size'] == '.' and s['waitlist limit'] == '.':
+				return "enrolled: {0}/{1}, No waitlist".format(s['current size'], s['class size'])
+			return "enrolled: {0}/{1}, waitlisted: {2}/{3}".format(s['current size'], s['class size'], s['waitlist size'], s['waitlist limit'])
     return msg
     
 
