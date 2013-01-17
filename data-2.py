@@ -1,1 +1,1 @@
-{'+15622918691': {('SPRING', 'MATH', '1B', '002'): 'enrolled: 305/325, waitlisted: 48/50', ('SPRING', 'PHYSICS', '7A', '107'): 'enrolled: 20/20, No waitlist', ('SPRING', 'PHYSICS', '7A', '001'): 'enrolled: 220/220, No waitlist'}}
+{'+15622918691': {('SPRING', 'MATH', '1B', '002'): 'enrolled: 310/325, waitlisted: 43/50', ('SPRING', 'PHYSICS', '7A', '107'): 'enrolled: 20/20, No waitlist', ('SPRING', 'PHYSICS', '7A', '001'): 'enrolled: 220/220, No waitlist'}}
