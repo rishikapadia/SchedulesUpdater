@@ -38,7 +38,7 @@ previously_checked = datetime.now()
 saved_so_far = {}
 
 def read_from_file():
-    f = open("data-2.py", "r")
+    f = open("data.py", "r")
     string = f.read()
     global schedules
     schedules = eval(string)
@@ -50,15 +50,14 @@ def write_to_file():
     # Write mode will _always_ destroy the existing contents of a file.
     try:
         # This will create a new file or **overwrite an existing file**.
-        f = open("data-2.py", "w")
-        if schedules != {'+15622918691': {}}:
-            f.write(str(schedules)) # Write a string to a file
+        f = open("data.py", "w")
+    	f.write(str(schedules)) # Write a string to a file
         f.close()
     except IOError:
         pass
 
 
-#####
+#######
 
 
 TEMPLATE_URL = "http://osoc.berkeley.edu/OSOC/osoc?y=0&p_term={0}&p_deptname={1}&p_course={2}"
@@ -151,36 +150,6 @@ def get_class_status(course):
 			return "enrolled: {0}/{1}, waitlisted: {2}/{3}".format(s['current size'], s['class size'], s['waitlist size'], s['waitlist limit'])
     return msg
     
-
-    """
-    section = ' '+course[3]+' '
-    if br.response().read().count(section) > 1:
-        return errors[5]
-    form_number = find_nr(br, section)
-    if form_number == -1:
-        return errors[2]
-    br.select_form(nr=form_number)
-    r = br.submit()
-    text = br.response().read()[1900:].strip()
-    if text == '':
-        return errors[4]
-    i = -1
-    for _ in range(3):
-        i = text.index('\n', i + 1)
-    text = text[:i]
-    fil = filter(lambda x: x!='' and x!='.', text.split('  '))
-    msg = ''
-    for f in fil:
-        msg += f
-        if msg[-1] == '\n':
-            msg = msg[:-1] + ' '
-    while msg.count('  '):
-        msg = msg.replace('  ', ' ')
-    msg = msg.strip() + '.'
-    
-    br.close()
-    return str(msg)
-    """
 
 
 def check_schedule(course, person):
