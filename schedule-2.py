@@ -38,7 +38,7 @@ previously_checked = datetime.now()
 saved_so_far = {}
 
 def read_from_file():
-    f = open("data.py", "r")
+    f = open("data-2.py", "r")
     string = f.read()
     global schedules
     schedules = eval(string)
@@ -50,7 +50,7 @@ def write_to_file():
     # Write mode will _always_ destroy the existing contents of a file.
     try:
         # This will create a new file or **overwrite an existing file**.
-        f = open("data.py", "w")
+        f = open("data-2.py", "w")
     	f.write(str(schedules)) # Write a string to a file
         f.close()
     except IOError:
