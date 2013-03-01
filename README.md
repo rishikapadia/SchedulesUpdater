@@ -9,7 +9,7 @@ This code checks the updated UC Berkeley course enrollment site every minute, an
 It enables users to manage their schedules separately from other users.
 
 
-The file "schedule-2.py" is of my own creation. All other files are part of the imported "mechanize" or "twilio" libraries.
+The file "schedule-2.py" is of my own creation. All other files are part of the imported "Beautiful Soup" or "Twilio" libraries.
 
 
 
