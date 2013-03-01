@@ -30,3 +30,9 @@ Include your phone number in the field provided, same as before.
 Type into the terminal:
 $ python schedule-2.py
 
+To add a class, text to your Twilio number a message of the format:
+<Semester> <Department or Subject> <Course> <Section Number>
+
+Eg. Fall Math 53 213
+
+
