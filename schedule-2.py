@@ -15,21 +15,21 @@ from datetime import datetime, timedelta
 from email.utils import parsedate
 
 
-TWILIO_PHONE_NUMBER = "(562) 352 - 0309"
-TWILIO_ACCOUNT_SID = 'ACdd9b3407c0ff20c450ebe385bc09c71a'
-TWILIO_AUTH_TOKEN = '0a1ffeb8651886b31fe61bcd1ee3d47f'
+TWILIO_PHONE_NUMBER = "(***) *** - ****"
+TWILIO_ACCOUNT_SID = '*'
+TWILIO_AUTH_TOKEN = '*'
 client = TwilioRestClient(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 
-FROM_NUMBER = '+15623520309'     # Twilio phone number
-TO_NUMBER = '+15622918691'     # Default TO_NUMBER
+FROM_NUMBER = '+***********'     # Twilio phone number
+TO_NUMBER = '+***********'     # Default TO_NUMBER
 
 urls = {'FALL': 'http://schedule.berkeley.edu/srchfall.html', 'SPRING': 'http://schedule.berkeley.edu/srchsprg.html', 'SUMMER': 'http://schedule.berkeley.edu/srchsmr.html'}
 abbrev = {"FALL":"FA", "SPRING":"SP", "SUMMER":"SU"}
 errors = ["Sorry, that is not a valid semester entry.", "Sorry, that is not a valid course entry.", "Sorry, that is not a valid section number.", "I'm sorry, you are not authorized to use this service.", "Telebears is down for an unscheduled maintenance.", "Section number returns too many results."]
 
-ADMIN = '+15622918691'
-AUTHORIZED = ['+15622918691']
-schedules = {'+15622918691': {}} # keys are phone numbers, values are dictionaries, of key msg_body(a list) and value class status
+ADMIN = '+***********'
+AUTHORIZED = ['+***********']
+schedules = {'+***********': {}} # keys are phone numbers, values are dictionaries, of key msg_body(a list) and value class status
 
 global critical
 critical = False
@@ -51,14 +51,14 @@ def write_to_file():
     try:
         # This will create a new file or **overwrite an existing file**.
         f = open("data-2.py", "w")
-        if schedules != {'+15622918691': {}}:
+        if schedules != {'+***********': {}}:
             f.write(str(schedules)) # Write a string to a file
         f.close()
     except IOError:
         pass
 
 
-#####
+#######
 
 
 TEMPLATE_URL = "http://osoc.berkeley.edu/OSOC/osoc?y=0&p_term={0}&p_deptname={1}&p_course={2}"
@@ -150,37 +150,7 @@ def get_class_status(course):
 				return "enrolled: {0}/{1}, No waitlist".format(s['current size'], s['class size'])
 			return "enrolled: {0}/{1}, waitlisted: {2}/{3}".format(s['current size'], s['class size'], s['waitlist size'], s['waitlist limit'])
     return msg
-    
 
-    """
-    section = ' '+course[3]+' '
-    if br.response().read().count(section) > 1:
-        return errors[5]
-    form_number = find_nr(br, section)
-    if form_number == -1:
-        return errors[2]
-    br.select_form(nr=form_number)
-    r = br.submit()
-    text = br.response().read()[1900:].strip()
-    if text == '':
-        return errors[4]
-    i = -1
-    for _ in range(3):
-        i = text.index('\n', i + 1)
-    text = text[:i]
-    fil = filter(lambda x: x!='' and x!='.', text.split('  '))
-    msg = ''
-    for f in fil:
-        msg += f
-        if msg[-1] == '\n':
-            msg = msg[:-1] + ' '
-    while msg.count('  '):
-        msg = msg.replace('  ', ' ')
-    msg = msg.strip() + '.'
-    
-    br.close()
-    return str(msg)
-    """
 
 
 def check_schedule(course, person):
@@ -252,7 +222,7 @@ def admin(msg):
     elif len(text_lines) == 1:
         if text_lines[0].lower() == 'clear' or text_lines[0].lower() == 'reset':
             global schedules
-            schedules = {'+15622918691': {}}
+            schedules = {'+***********': {}}
     elif text_lines[0].upper() == 'EXIT':
         raise UserError("User-prompted exception successful.")
     elif text_lines[0].upper() == 'AUTHORIZE':
