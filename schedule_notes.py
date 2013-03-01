@@ -11,20 +11,20 @@ from twilio.rest import TwilioRestClient
 from datetime import datetime
 
 
-TWILIO_PHONE_NUMBER = "(562) 352 - 0309"
-TWILIO_ACCOUNT_SID = 'ACdd9b3407c0ff20c450ebe385bc09c71a'
-TWILIO_AUTH_TOKEN = '0a1ffeb8651886b31fe61bcd1ee3d47f'
+TWILIO_PHONE_NUMBER = "*"
+TWILIO_ACCOUNT_SID = '*'
+TWILIO_AUTH_TOKEN = '*'
 client = TwilioRestClient(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 
 
-FROM_NUMBER = '+15623520309'     # Twilio phone number
-TO_NUMBER = '+15622918691'     # Default TO_NUMBER
+FROM_NUMBER = '+*'     # Twilio phone number
+TO_NUMBER = '+*'     # Default TO_NUMBER
 
 URLS = ["http://schedule.berkeley.edu/srchfall.html", "http://schedule.berkeley.edu/srchsprg.html", "http://schedule.berkeley.edu/srchsmr.html"]
 
-admins = ('+15622918691')
-authorized = ['+15622918691']
-schedules = {'+15622918691': {}} # keys are phone numbers, values are dictionaries, of key msg_body and value class status
+admins = ('+*')
+authorized = ['+*']
+schedules = {'+*': {}} # keys are phone numbers, values are dictionaries, of key msg_body and value class status
 
 critical = False
 previously_checked = datetime.now()
