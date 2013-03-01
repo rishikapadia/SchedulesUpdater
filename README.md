@@ -18,7 +18,7 @@ To run:
 ========
 In the schedule-2.py file:
 --------------------------
-Change the fields marked with ****** to your 10 digit phone number or registered Twilio number, preceded by the number 1.
+Change the phone number fields to your 10 digit phone number or registered Twilio number, preceded by the number 1.
 Fill in your Twilio Account SID and Authorization Token into the constant declarations.
 
 In the data-2.py file:
